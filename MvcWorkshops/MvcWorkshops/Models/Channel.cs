@@ -10,6 +10,9 @@ namespace MvcWorkshops.Models
     public class Channel
     {
 	    public int Id { get; set; }
+
+		[MaxLength(50)]
+		public string Name { get; set; }
 		
 	    public string CreatedById { get; set; }
 

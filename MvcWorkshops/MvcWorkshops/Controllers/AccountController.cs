@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MvcWorkshops.Helpers;
 using MvcWorkshops.Models;
 using MvcWorkshops.Models.AccountViewModels;
 using MvcWorkshops.Services;
@@ -221,7 +222,25 @@ namespace MvcWorkshops.Controllers
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-                var result = await _userManager.CreateAsync(user, model.Password);
+	            var channel = new Channel
+	            {
+					Name = $"Default ({model.Email})",
+					CreatedAt = DateTime.Now,
+					ChannelColor = ColorHelper.GetColor(),
+					IsDefault = true
+	            };
+
+	            user.Channels = new List<Channel> {channel};
+	            user.ObservedChannels = new List<ObservedChannel>
+	            {
+		            new ObservedChannel
+		            {
+			            ApplicationUser = user,
+			            Channel = channel
+		            }
+	            };
+
+	            var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
